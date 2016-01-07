@@ -19,10 +19,7 @@ LSI based controllers. Just give it a try and report back.
 
 # Requirements
 
-You should have mptbase and mptctl loaded or compiled into the kernel. If you
-are to compile mpt-status by yourself, make sure you have the kernel source
-installed, or else it will fail. This deficiency will hopefully be addressed
-soon.
+You should have mptbase and mptctl loaded or compiled into the kernel.
 
 
 # Reported working hardware configuration
