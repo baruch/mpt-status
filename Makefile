@@ -1,6 +1,6 @@
 PROG		:= mpt-status
 PREFIX		:= /usr
-CFLAGS		:= -Iincl -Wall -W -O2
+CFLAGS		:= -Wall -W -O2
 DFLAGS		:=
 LDFLAGS		:=
 DESTDIR		:=
