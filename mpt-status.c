@@ -57,7 +57,7 @@ static int sel;
 static const struct option long_options[] = {
 	{ "autoload",		no_argument,       &sel,  ARG_M_A },
 	{ "controller",		required_argument, NULL, 'u' },
-	{ "debug",		optional_argument, NULL, 'd' },
+	{ "debug",		required_argument, NULL, 'd' },
 	{ "help",		no_argument,       NULL, 'h' },
 	{ "newstyle",		no_argument,       NULL, 'n' },
 	{ "probe_id",		no_argument,	   NULL, 'p' },
@@ -74,7 +74,7 @@ static const char* const usage_template =
   "\n"
   "      --autoload             This will try to automatically load the \n"
   "                             mptctl kernel module\n"
-  "  -d, --debug [<int>]        Enable debugging and set level optionally\n"
+  "  -d, --debug <int>          Enable debugging and set level\n"
   "                             NOTE: This is not fully implemented yet\n"
   "  -h, --help                 Print this help information page\n"
   "  -n, --newstyle             Use the new style output. This parameter was\n"
