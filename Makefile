@@ -9,11 +9,6 @@ CC		:= gcc
 INSTALL		:= install -D
 ARCH		:= $(shell uname -m)
 
-ifeq "${ARCH}" "sparc64"
-	CFLAGS	:= -Iincl -Wall -W -O2 -m64 -pipe \
-			-mcpu=ultrasparc -mcmodel=medlow
-endif
-
 ${PROG}: ${PROG}.c ${PROG}.h Makefile
 	${CC} ${DFLAGS} ${CFLAGS} -o $@ $< ${LDFLAGS}
 
