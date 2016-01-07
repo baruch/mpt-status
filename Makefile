@@ -14,7 +14,7 @@ ifeq "${ARCH}" "sparc64"
 			-mcpu=ultrasparc -mcmodel=medlow
 endif
 
-${PROG}: ${PROG}.c ${PROG}.h
+${PROG}: ${PROG}.c ${PROG}.h Makefile
 	${CC} ${DFLAGS} ${CFLAGS} -o $@ $< ${LDFLAGS}
 
 install: ${PROG}
