@@ -6,19 +6,19 @@ LDFLAGS		:=
 DESTDIR		:=
 MANDIR		:= /usr/share/man
 CC		:= gcc
-INSTALL		:= install -D
+INSTALL		:= install
 ARCH		:= $(shell uname -m)
 
 ${PROG}: ${PROG}.c ${PROG}.h Makefile
 	${CC} ${DFLAGS} ${CFLAGS} -o $@ $< ${LDFLAGS}
 
 install: ${PROG}
-	${INSTALL} -s -o root -g root -m 0500 $< \
-		${DESTDIR}${PREFIX}/sbin
+	${INSTALL} -d ${DESTDIR}${PREFIX}/sbin/
+	${INSTALL} -o root -g root -m 0500 $< ${DESTDIR}${PREFIX}/sbin
 
 install_doc: man/${PROG}.8
-	${INSTALL} -o root -g root -m 0644 $< \
-		${DESTDIR}${MANDIR}/man8
+	${INSTALL} -d ${DESTDIR}${MANDIR}/man8/
+	${INSTALL} -o root -g root -m 0644 $< ${DESTDIR}${MANDIR}/man8
 	gzip -9 ${DESTDIR}${MANDIR}/man8/${PROG}.8
 
 uninstall:
