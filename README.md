@@ -46,13 +46,11 @@ was kind enough to put a link to the current mpt-status home. Thanks, Matt.
 
 To my avail following distributions have mpt-status included:
 
-Distro  | Status    | URL
---------+-----------+---------------------------------------------------------
-Debian	| OK        | http://packages.debian.org/unstable/admin/mpt-status
---------+-----------+---------------------------------------------------------
-Suse	| NOK (old) | http://www.novell.com/products/linuxpackages/professional/mpt-status.html
-	| NOK (old) | http://www.novell.com/products/linuxpackages/enterpriseserver/SP3/ia64/mpt-status.html
---------+-----------+---------------------------------------------------------
+| Distro | Status    | URL |
+| ------ | --------- | --- |
+| Debian | OK        | http://packages.debian.org/unstable/admin/mpt-status |
+| Suse	 | NOK (old) | http://www.novell.com/products/linuxpackages/professional/mpt-status.html |
+|	 | NOK (old) | http://www.novell.com/products/linuxpackages/enterpriseserver/SP3/ia64/mpt-status.html |
 
 Support for following distros can be found through google and rpm searches 
 (status unknown):
@@ -123,19 +121,20 @@ There is also a debug mode since the mpt-status-1.2.0 release.
 
 The mpt-status software is known and reported to compile and work on following
 Linux distributions:
-SuSE		: 9.0, 9.1, 9.2, 9.3, 10.0, 10.1, 10.2, SLES8, SLES9, SLES10
-Redhat		: 7.3, 9.0, RHEL3, RHEL4, FC1, FC2, FC3, FC4, FC5
-Debian		: all so far
-Ubuntu		: edgy
-Gentoo		: 2005.x
-ulibc-based	: all
+
+* SuSE		: 9.0, 9.1, 9.2, 9.3, 10.0, 10.1, 10.2, SLES8, SLES9, SLES10
+* Redhat	: 7.3, 9.0, RHEL3, RHEL4, FC1, FC2, FC3, FC4, FC5
+* Debian	: all so far
+* Ubuntu	: edgy
+* Gentoo	: 2005.x
+* ulibc-based	: all
 
 Kernels:
 Linux: 2.4.x, 2.6.x
 
 Architectures:
-i386
-x86_64
+* i386
+* x86\_64
 
 
 # List of Hardware configuration
@@ -147,6 +146,6 @@ b) can be monitored.
 If you have successfully running mpt-status on a platform not mentioned below,
 please send me following output:
 
-dmesg -s 1000000 (best after having rebooted your machine)
-lspci -v
-dmidecode
+* dmesg -s 1000000 (best after having rebooted your machine)
+* lspci -v
+* dmidecode
