@@ -1,13 +1,7 @@
 PROG		:= mpt-status
 PREFIX		:= /usr
-KERNEL_PATH	:= /usr/src/linux
-KERNEL_PATH_B	:= /lib/modules/`uname -r`/build
-KERNEL_PATH_S	:= /lib/modules/`uname -r`/source
-CFLAGS		:= -Iincl -Wall -W -O2 \
-			-I${KERNEL_PATH}/drivers/message/fusion \
-			-I${KERNEL_PATH_B}/drivers/message/fusion \
-			-I${KERNEL_PATH_S}/drivers/message/fusion
-DFLAGS		:= #-DSANITIZED_KERNEL_HEADERS
+CFLAGS		:= -Iincl -Wall -W -O2
+DFLAGS		:=
 LDFLAGS		:=
 DESTDIR		:=
 MANDIR		:= /usr/share/man

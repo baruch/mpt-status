@@ -99,7 +99,7 @@ static const char* const usage_template =
 
 static char *VolumeTypes[] = { "IS", "IME", "IM" };
 static char *VolumeTypesHuman[] = { "RAID-0", "RAID-1E", "RAID-1" };
-mpiIoctlBlk_t *mpiBlkPtr = NULL;
+struct mpt_ioctl_command *mpiBlkPtr = NULL;
 unsigned char g_command[BIG];
 char  g_data[4*BIG];
 char  g_reply[BIG];
@@ -193,13 +193,13 @@ static int allocReplyFrame(void) {
 	return 0;
 }
 
-mpiIoctlBlk_t *allocIoctlBlk(uint numBytes) {
-	int blksize = sizeof(mpiIoctlBlk_t) + numBytes;
+struct mpt_ioctl_command *allocIoctlBlk(uint numBytes) {
+	int blksize = sizeof(struct mpt_ioctl_command) + numBytes;
 
 	if (blksize >= BIG) {
 		return NULL;
 	}
-	mpiBlkPtr = (mpiIoctlBlk_t *) &g_command;
+	mpiBlkPtr = (struct mpt_ioctl_command *) &g_command;
 	memset(mpiBlkPtr, 0, blksize);
 	if (allocReplyFrame()) {
 		printf("allocReplyFrame call failed\n");
@@ -332,10 +332,8 @@ static int __probe_scsi_id2(void) {
 
 static int read_page2(uint flags) {
 	MPIDefaultReply_t *pReply = NULL;
-	int CmdBlkSize;
 	int status = -1;
 
-	CmdBlkSize = sizeof(mpiIoctlBlk_t) + ((mpiBlkPtr->dataSgeOffset)*4) + 8;
 	mpiBlkPtr->hdr.iocnum = ioc_unit;
 	mpiBlkPtr->hdr.port = 0;
 	if (ioctl(m, (unsigned long) MPTCOMMAND, (char *) mpiBlkPtr) != 0) {

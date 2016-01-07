@@ -2,28 +2,19 @@
 #define _MPT_STATUS_H
 
 #include <sys/ioctl.h>
-#ifdef __linux__
-#include <linux/compiler.h>
-#endif
+#include <stdint.h>
 
-#ifdef SANITIZED_KERNEL_HEADERS
-#include "mpt-sanitized.h"
-#else
-#ifndef __user
 #define __user
-#endif
-#ifndef __kernel
-#define __kernel
-#endif
-#include "pci.h"	// config.h and header.h from pciutils package
-#include "lsi/mpi_type.h"
-#include "lsi/mpi.h"
-#include "lsi/mpi_ioc.h"
-#include "lsi/mpi_cnfg.h"
-#include "lsi/mpi_raid.h"
-#include "mptctl.h"
-//#include "mptbase.h"
-#endif // SANITIZED_KERNEL_HEADERS
+typedef uint8_t u8;
+typedef uint16_t u16;
+typedef uint32_t u32;
+
+#include "includes/mpi_type.h"
+#include "includes/mpi.h"
+#include "includes/mpi_cnfg.h"
+#include "includes/mpi_ioc.h"
+#include "includes/mpi_raid.h"
+#include "includes/mptctl.h"
 
 #define VERSION "1.2.0"
 
@@ -57,7 +48,5 @@ static char *wrong_scsi_id =
 "\nYou seem to have no SCSI disks attached to your HBA or you have\n"
 "them on a different scsi_id. To get your SCSI id, run:\n\n"
 "    mpt-status -p\n";
-
-typedef struct mpt_ioctl_command mpiIoctlBlk_t;
 
 #endif /* End of mpt-status.h */
