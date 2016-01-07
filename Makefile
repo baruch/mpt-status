@@ -7,7 +7,6 @@ DESTDIR		:=
 MANDIR		:= /usr/share/man
 CC		:= gcc
 INSTALL		:= install
-ARCH		:= $(shell uname -m)
 
 ${PROG}: ${PROG}.c ${PROG}.h Makefile
 	${CC} ${DFLAGS} ${CFLAGS} -o $@ $< ${LDFLAGS}
