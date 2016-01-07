@@ -12,7 +12,7 @@ LSI SAS1064 SCSI RAID storage controller
 LSI SAS1068 SCSI RAID storage controller
 LSI SAS 3442-R SCSI RAID storage controller
 
-Since the tool is using the MPI (message passing interface) changes are high
+Since the tool is using the MPI (message passing interface) chances are high
 that the basic information regarding RAID status will be available for all
 LSI based controllers. Just give it a try and report back.
 
