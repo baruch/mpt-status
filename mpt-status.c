@@ -1089,8 +1089,16 @@ static void __print_physdisk_classic(RaidPhysDiskPage0_t *phys) {
 }
 
 static void do_init(void) {
-	int save_errno;
+	static const char* devnames[] = {
+		"/dev/mptctl",
+		"/dev/mpt2ctl",
+		"/dev/mpt3ctl",
+		NULL
+	};
+	int save_errno = 0;
+	const char *save_devname = NULL;
 	int status;
+	int dev_idx;
 
 	if (auto_load > 0) {
 		status = system("/sbin/modprobe mptctl");
@@ -1099,24 +1107,37 @@ static void do_init(void) {
 			mpt_exit(MPT_EXIT_UNKNOWN|MPT_EXIT_NOCLOSE);
 		}
 	}
-	m = open("/dev/mptctl", O_RDWR);
-	if (-1 == m) {
-		save_errno = errno;
-		perror("open /dev/mptctl");
-		if (save_errno == EACCES) {
-			mpt_fprintf(stderr, " Need root to run this program\n");
-		} else if (save_errno == ENOENT) {
-			mpt_fprintf(stderr, 
-			            "  Try: mknod /dev/mptctl c 10 220\n");
-		} else if (save_errno == ENODEV) {
-			mpt_fprintf(stderr,
-			            "  Are you sure your controller"
-			            " is supported by mptlinux?\n");
+
+	for (dev_idx = 0; devnames[dev_idx] != NULL; dev_idx++) {
+		m = open("/dev/mptctl", O_RDWR);
+		if (m > -1)
+			return m;
+
+		// Set priorities among the error codes for the most interesting by the order:
+		// EACCESS, ENODEV, ENOENT
+		if (errno == EACCES ||
+			(save_errno != EACCES && errno == ENODEV) ||
+			save_errno = 0)
+		{
+			save_errno = errno;
+			save_devname = devnames[dev_idx];
 		}
-		mpt_fprintf(stderr, 
-		            "Make sure mptctl is loaded into the kernel\n");
-		mpt_exit(MPT_EXIT_UNKNOWN|MPT_EXIT_NOCLOSE);
 	}
+
+	perror("Failed to open an mpt ctl device");
+	if (save_errno == EACCES) {
+		mpt_fprintf(stderr, " Need root to run this program\n");
+	} else if (save_errno == ENOENT) {
+		mpt_fprintf(stderr, 
+				"  There is no mptctl, mpt2ctl or mpt3ctl device, do you have an LSI MPT device at all?\n");
+	} else if (save_errno == ENODEV) {
+		mpt_fprintf(stderr,
+				"  Are you sure your controller"
+				" is supported by mptlinux?\n");
+	}
+	mpt_fprintf(stderr,
+			"Make sure mptctl is loaded into the kernel\n");
+	mpt_exit(MPT_EXIT_UNKNOWN|MPT_EXIT_NOCLOSE);
 }
 
 int main(int argc, char *argv[]) {
