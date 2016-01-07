@@ -36,11 +36,12 @@ IBM eServer BladeCenter LS20
 
 # Where can I get this fine piece of software?
 
-Homepage of maintained version: http://www.drugphish.ch/~ratz/mpt-status/
+Homepage of maintained version: http://github.com/baruch/mpt-status
 
 The original version of this tool is not maintained anymore by its author. He
 was kind enough to put a link to the current mpt-status home. Thanks, Matt.
 
+The second maintainer was Roberto Nibali, whose site disappeared at some point.
 
 # Distro related support
 
