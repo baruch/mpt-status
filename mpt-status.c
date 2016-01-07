@@ -38,6 +38,7 @@ USA.
 #include "mpt-status.h"
 
 #define ARG_M_A 0x0001
+#define ARG_M_S 0x0002
 
 static int m = 0;
 static int quiet_mode = 0;
@@ -52,6 +53,7 @@ static int id_of_primary_device = 0;
 static int ioc_unit = 0;
 static int newstyle = 0;
 static int sync_state[2] = { 0, 0 };
+static int sync_info = 0;
 
 static int sel;
 static const struct option long_options[] = {
@@ -64,6 +66,7 @@ static const struct option long_options[] = {
 	{ "quiet",		no_argument,       NULL, 'q' },
 	{ "set_id",		required_argument, NULL, 'i' },
 	{ "status_only",	no_argument,       NULL, 's' },
+	{ "sync_info",		no_argument,	   &sel, ARG_M_S },
 	{ "verbose",            no_argument,       NULL, 'v' },
 	{ "version",            no_argument,       NULL, 'V' },
 	{ 0,                    no_argument,       NULL,  0  },
@@ -85,6 +88,8 @@ static const char* const usage_template =
   "  -i, --set_id <int>         Set id of primary device (check README)\n"
   "  -s, --status_only          Only print the status information. This can\n"
   "                             be used for easy scripting\n"
+  "      --sync_info            Show RAID (re)synchronization information\n"
+  "                             (subject to quiet mode setting)\n"
   "  -u, --controller <int>     Set the IOC unit (controller)\n"
   "  -v, --verbose              Print verbose information, such as warnings\n"
   "  -V, --version              Print version information\n"
@@ -124,6 +129,7 @@ static void GetPhysDiskInfo(RaidVol0PhysDisk_t *, int);
 static void GetHotSpareInfo(void);
 static void GetResyncPercentageSilent(RaidVol0PhysDisk_t *, unsigned char *, int);
 static void GetResyncPercentage(RaidVol0PhysDisk_t *, unsigned char *, int);
+static void GetSyncInfo(void);
 static void do_init(void);
 /* internal-functions declaration */
 static void __check_endianess(void);
@@ -131,6 +137,7 @@ static void __print_volume_advanced(RaidVolumePage0_t *);
 static void __print_volume_classic(RaidVolumePage0_t *);
 static void __print_physdisk_advanced(RaidPhysDiskPage0_t *, int);
 static void __print_physdisk_classic(RaidPhysDiskPage0_t *);
+static SyncInfoData __get_resync_data(void);
 
 static void __check_endianess(void) {
 	int i = 1;
@@ -768,6 +775,140 @@ static void GetResyncPercentage(RaidVol0PhysDisk_t *pDisk, unsigned char *pVol, 
 	return;
 }
 
+/* get resync data for volume 0 only */
+static SyncInfoData __get_resync_data(void) {
+	SyncInfoData data = { -1, -1, -1 };
+	MpiRaidActionRequest_t	*pRequest;
+	unsigned int numBytes;
+
+	// get size for structure
+	numBytes = (sizeof(Config_t) - sizeof(SGE_IO_UNION)) + sizeof(SGESimple64_t);
+
+	// get mpi block pointer
+	if ((mpiBlkPtr = allocIoctlBlk(numBytes)) == NULL ) return data;
+
+	// set Sge offset (dunno)
+	mpiBlkPtr->dataSgeOffset = (sizeof (MpiRaidActionRequest_t) - sizeof(SGE_IO_UNION))/4;
+
+	/* Initialize data in/data out sizes: Change below if need to */
+	mpiBlkPtr->dataInSize = mpiBlkPtr->dataOutSize = 0;
+
+	// prepare request call
+	pRequest = (MpiRaidActionRequest_t *) mpiBlkPtr->MF;
+	pRequest->Action       = MPI_RAID_ACTION_INDICATOR_STRUCT;
+	pRequest->Function     = MPI_FUNCTION_RAID_ACTION;
+	pRequest->MsgContext   = -1;
+	pRequest->ActionDataWord  = 0; /* action data is 0 */
+
+	// if status is ok - read total and remaining blocks
+	if(read_page2(MPT_FLAGS_KEEP_MEM)==0) {
+		uint *pdata = (uint *) mpiBlkPtr->replyFrameBufPtr;
+
+		// populate data structure - total blocks
+		pdata += 6;
+		data.blocks_total = *pdata;
+
+		// populate data structure - left blocks
+		pdata += 2;
+		data.blocks_left = *pdata;
+
+		// populate data structure - done blocks
+		data.blocks_done = data.blocks_total - data.blocks_left;
+	}
+
+	// free unused memory
+	freeMem();
+
+	// return populated structure
+	return data;
+}
+
+static void GetSyncInfo(void) {
+	// data holder for rate count
+	SyncInfoData	data[2];
+
+	// get first data read
+	data[0] = __get_resync_data();
+
+	// if no blocks left to synchronize - we're synchronized, we can finish
+	if( 0 == data[0].blocks_left ) {
+		printf("STATUS: no resync in progress (synchronized or degraded: status unhandled).\n");
+
+	// we're synchronizing now... count rates, times, etc...
+	} else if( 0 < data[0].blocks_left ) {
+		char	progress[52]	= "[                                                 ]";
+		int	percent		= 0,
+			diff		= 0,
+			i		= 0,
+			time[4];
+		double	size_total	= 0,
+			size_left	= 0,
+			size_done	= 0,
+			rate		= 0;
+
+		// get second data probe after 0.1 sec wait
+		usleep(100000);
+		data[1] = __get_resync_data();
+
+		// get basic stats (percent done and synchronization rate)
+		diff		= (data[0].blocks_left - data[1].blocks_left);				// blocks done in 0.1sec
+		percent		= ((data[1].blocks_done >> 6)*100)/(data[1].blocks_total >> 6);		// percent done
+		rate		= ((double)diff/1048576)*5120;						// MiB/s
+
+		size_total	= (((double)data[1].blocks_total/1048576)*512)/1024;			// total array size in GiB
+		size_left	= (((double)data[1].blocks_left/1048576)*512)/1024;			// size left to synchronize in GiB
+		size_done	= (((double)data[1].blocks_done/1048576)*512)/1024;			// size already synchronized in GiB
+
+		time[3] = data[1].blocks_left/diff/10;							// total seconds left
+		time[0] = time[3]/3600;									// H
+		time[1] = (time[3]-(3600*time[0]))/60;							// i
+		time[2] = time[3]-(3600*time[0])-(60*time[1]);						// s
+
+		// set progress bar...
+		for(i = 1; i < percent/2; i++)
+		    progress[i] = '=';
+
+		if(i==1) progress[i] = '>';
+		else progress[--i] = '>';
+
+		// if in quite_mode: only print resync status
+		if(quiet_mode>0) {
+			printf("STATUS: RESYNC_IN_PROGRESS %u%% (%01.0f/%01.0f GiB) @ %01.1f MiB/s, %uh %02um left\n",
+				percent,
+				size_done,
+				size_total,
+				rate,
+				time[0],
+				time[1]
+			);
+
+		// othewise be more verbose
+		} else {
+			printf("STATUS: Volume 0 array is being resynchronized\n");
+
+			printf("STATUS: Data done: %01.3f GiB / %01.3f GiB (%01.3f GiB left)\n",
+				size_done,
+				size_total,
+				size_left
+			);
+
+			printf("STATUS: Aproximatly time left: %02uh %02um %02us.\n",
+				time[0],
+				time[1],
+				time[2]
+			);
+
+			printf("%u%% %s %01.2f MiB/s\n", percent, progress, rate);
+		}
+
+	} else {
+		printf("STATUS: Error obtaining resync info.\n");
+		mpt_exit(MPT_EXIT_UNKNOWN);
+	}
+
+	return;
+}
+
 static void __print_volume_advanced(RaidVolumePage0_t *page) {
 	if (1 == print_status_only) {
 		mpt_printf("vol_id:%d", page->VolumeID);
@@ -1183,9 +1324,9 @@ int main(int argc, char *argv[]) {
 			mpt_exit(MPT_EXIT_OKAY);
 			break;
 		case  0:
-			if (sel == ARG_M_A) {
-				auto_load++;
-			}
+			if (sel == ARG_M_A) auto_load++;
+			if (sel == ARG_M_S) sync_info = 1;
+
 			break;
 		case -1:
 			// Done with options
@@ -1211,7 +1352,6 @@ int main(int argc, char *argv[]) {
 			mpt_exit(MPT_EXIT_UNKNOWN);
 		}
 		*/
-		GetVolumeInfo();
 	} else {
 		/* this is the old style setup */
 		if (probe_id > 0) {
@@ -1227,7 +1367,12 @@ int main(int argc, char *argv[]) {
 				mpt_exit(MPT_EXIT_OKAY);
 			}
 		}
-		GetVolumeInfo();
 	}
+
+	if (sync_info)
+		GetSyncInfo();
+	else
+		GetVolumeInfo();
+
 	return mpt_exit_mask;
 }

@@ -49,4 +49,10 @@ static char *wrong_scsi_id =
 "them on a different scsi_id. To get your SCSI id, run:\n\n"
 "    mpt-status -p\n";
 
+typedef struct _SYNC_INFO {
+	int	blocks_total;
+	int	blocks_done;
+	int	blocks_left;
+} SyncInfoData;
+
 #endif /* End of mpt-status.h */
