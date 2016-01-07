@@ -1,0 +1,38 @@
+Summary: MPT Fusion raid inquiry tool
+Name: mpt-status
+Version: 1.1.4
+Release: 0
+License: GPL
+Group: Applications/System
+URL: http://www.drugphish.ch/~ratz/mpt-status/
+
+Packager: Jean-Philippe CIVADE (jp.civade@100p100.net)
+Vendor: None
+
+Source: http://www.drugphish.ch/~ratz/mpt-status/mpt-status-%{version}.tar.gz
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
+
+%description
+mpt-status give informations about raid status for LSI Fusion controllers.
+This is quite a modified version to the original mpt-status-1.0 package.
+%prep
+%setup
+
+%build
+%{__make}
+
+%install
+%{__rm} -rf %{buildroot}
+%{__install} -D -m0755 mpt-status %{buildroot}%{_sbindir}/mpt-status
+
+%clean
+%{__rm} -rf %{buildroot}
+
+%files
+%defattr(-, root, root, 0755)
+%doc doc/*
+%{_sbindir}/mpt-status
+
+%changelog
+* Thu Jul 14 2005 Jean-Philippe CIVADE <jp.civade@100p100.net> - 1.1.3-0
+- Initial package.

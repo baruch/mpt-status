@@ -1,0 +1,12 @@
+This is the man page written by Steffen Joeris for the Debian project.
+I have shamelessly taken this from his patchset against mpt-status,
+which can be found here:
+
+    http://packages.debian.org/unstable/admin/mpt-status
+
+The reasons I've done this, is that according to the man page I'm allowed
+to do so and there's absolutely no point in some other distribution not
+having a man page. It's all about the marginal unity of the distributions.
+
+I'd like to thank Steffen Joeris for his work (because the last time I've
+written a man page was probably in 1996).

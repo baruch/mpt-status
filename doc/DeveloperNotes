@@ -1,0 +1,99 @@
+Regarding 64bit
+---------------
+
+http://www-128.ibm.com/developerworks/linux/library/l-port64.html
+
+
+From the OpenBSD mpt(4) man page:
+
+     The LSI Logic SCSI and Fibre Channel controllers contain firmware that
+     presents a multiprotocol service layer based on the LSI Logic Fusion-MPT
+     architecture.  The firmware isolates the host drivers from the hardware
+     and controls the device side of the message passing interface to the host
+     device drivers.  The firmware manages all phases of an I/O request and
+     optimizes the interrupt management for the system.  For Fibre Channel,
+     the firmware also manages all FC-2 through FC-4 services, which minimizes
+     the amount of Fibre Channel unique services required with the host driv-
+     er.
+
+     The MPI (Message Passing Interface) definition includes a register-level
+     transport mechanism and a messaging protocol.  A system doorbell and mes-
+     sage queues define the MPI transport interface.  Inbound Message Frames
+     (MF), allocated in host memory, identify I/O operations to be performed
+     by the IO Controller (IOC).  These operations are queued on the Request
+     Queue by the host driver.  Outbound Message Frames, also in host memory,
+     track I/O operations as they complete.  These frames are queued on the
+     Reply Queue by the IOC.  A doorbell mechanism is provided for IOC config-
+     uration, reset management, and IOC status.
+
+
+You can now specify the scsi_id of the primary disk of an array. This is in
+case you've got an array but your primary disk is not physically in the slot 0
+in your chassis (scsi id 0) but in another one. The following excerpt from the
+source code should clarify what I mean:
+
+            This represents the id of the primary disk of an array. If you have
+            following setup, the ID of the primary disk would be 1.
+
+            +---+---+---+---+---+---+---+---+----
+   SCSI ID  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | ...
+            +---+---+---+---+---+---+---+---+----
+                   \   \   \___  Array: Secondary Disk
+                    \   \______  Array: Spare Disk
+                     \_________  Array: Primary Disk
+
+            In the following setup without a Spare Disk, the ID of the primary
+            disk would be 2.
+
+            +---+---+---+---+---+---+---+---+----
+   SCSI ID  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | ...
+            +---+---+---+---+---+---+---+---+----
+                       \   \___  Array: Secondary Disk
+                        \______  Array: Primary Disk
+
+
+
+
+Random Notes
+------------
+The includes pci.h, config.h, header.h are from pciutils. Most distros might
+have a pciutils-devel package or something similar.
+
+
+Directory structure
+-------------------
+./doc/AUTHORS	          : This file lists the authors of the mpt-status code
+./doc/Changelog           : Keeps track of the changes in prosa 
+./doc/COPYING	          : The GNU v2 License copy
+./doc/INSTALL	          : The installation documents
+./doc/README	          : This document
+./doc/ReleaseNotes        : The actual release notes, read them carefully
+./doc/TODO	          : Stuff that needs to be done
+./doc/THANKS	          : A small thank you endroit for the contributors
+./doc/DeveloperNotes      : Some information on the message API of mpt
+./incl/config.h           : Include file from pciutils
+./incl/header.h           : Include file from pciutils
+./incl/pci.h	          : Include file from pciutils
+./Makefile	          : Used to build the mpt-status binary
+./mpt-status.c	          : The mighty tool itself
+./mpt-status.h	          : The main include file for mpt-status
+./contrib/mpt-status.spec
+
+
+Kernel Header Sanitation
+------------------------
+ks_to_us_header() {
+	# Voodoo to partially fix broken upstream headers.
+	# Issues with this function should go to plasmaroo.
+	sed -i \
+		-e "s/\([ "$'\t'"]\)\(u\|s\)\(8\|16\|32\|64\)\([ "$'\t'"]\)/\1__\2\3\4/g;" \
+		-e 's/ \(u\|s\)\(8\|16\|32\|64\)$/ __\1\2/g' \
+		-e 's/\([(, ]\)\(u\|s\)64\([, )]\)/\1__\264\3/g' \
+		-e "s/^\(u\|s\)\(8\|16\|32\|64\)\([ "$'\t'"]\)/__\1\2\3/g;" \
+		-e "s/ inline / __inline__ /g" \
+		"$@";
+}
+
+After having diffed the 2.4.x and 2.6.x kernel trees with regard to the MPT,
+I'm quite convinced that a kernel header sanitation will not work in the end.
+

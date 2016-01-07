@@ -1,0 +1,99 @@
+How can I compile mpt-status
+----------------------------
+Simply go with
+
+	make
+
+and if your kernel sources are not located at /usr/src/linux, try
+
+	make KERNEL_PATH=/path/to/your/kernel/src
+
+If this does not work, send me (Roberto Nibali) an email with the output and I
+try to fix it. You might also need to tweak the Makefile shipped with this
+package.
+
+IMPORTANT: Try to compile mpt-status on a machine with the same kernel headers
+           on which kernel version the resulting mpt-status binary will run on.
+           If you compile mpt-status with 2.6.x headers and deploy the binary
+           on a 2.4.x kernel based system, it might be that the tool will try
+           to fetch the wrong pages and this can result in major havoc!
+
+
+How can I install mpt-status
+----------------------------
+Simply go with (as user root)
+
+	make install
+
+This will install the mpt-status binary into /usr/sbin. If you need another
+path, you can prefix the installation path by setting PREFIX like follows:
+
+	make PREFIX=/my/prefix/path
+
+To check if the mpt-status binary is installed into the correct path, invoke
+
+	make -n install
+
+and carefully check the output. If you're a distro packager or you otherwise
+need to create a package relative to the final path, you have the possibility
+to specify the DESTDIR variable. Following install call:
+
+	make DESTDIR=/var/tmp/package install
+
+would install the mpt-status binary into
+
+	/var/tmp/package/usr/sbin/mpt-status
+
+You can now also install the man page by invoking
+
+	make install_doc
+
+This will install the mpt-status.8 man page.
+
+
+How can I uninstall mpt-status
+------------------------------
+Simply go with (as user root)
+
+	make uninstall
+
+If you previously installed mpt-status into a prefixed directory you also have
+to provide this prefix to the uninstall target, like so:
+
+	make PREFIX=/my/prefix/path uninstall
+
+Since this is only one simple binary, the uninstall target is almost ridiculous
+so for real hardcore hackers, you might also use ... rm:
+
+	\rm -f /path/to/mpt-status
+
+or if you so wish:
+
+	make -n uninstall | sh
+
+You can now also uninstall the man page by invoking
+
+	make uninstall_doc
+
+This will uninstall the mpt-status.8 man page.
+
+
+If you don't have the kernel sources package installed (Redhat based info)
+--------------------------------------------------------------------------
+This applies to FC3/FC4 and RH ES4 (*).
+
+1. Do "up2date --get-source kernel"
+2. Kernel src rpm is now in /var/spool/up2date. Install it with
+   "rpm -Uvh /var/spool/up2date/kernel-<version>.src.rpm"
+3. Do  "cd /usr/src/redhat/SPECS/"
+4. Do "rpmbuild -bp --target=i686 kernel-2.6.spec"
+5. Last, you can move the source in the /usr/src/redhat/BUILD/kernel-<version>
+   directory to the /usr/src tree; while not strictly necessary, we suggest that
+   you do this to match the generally-available documentation.
+6. cd /usr/src/redhat/BUILD/kernel-<version> /usr/src/
+7. mv linux-<version> /usr/src/
+8. cd /usr/src
+9. ln -s ./linux-<version> linux
+
+[* http://fedora.redhat.com/docs/release-notes/fc4/errata/#sn-kernel]
+

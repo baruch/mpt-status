@@ -1,0 +1,99 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH MPT-STATUS 8 "November 2006"
+
+.SH NAME
+mpt-status \- retrieve configuration and health status from LSI hardware RAID controllers
+
+.SH SYNOPSIS
+.B mpt-status [ options ]
+
+.SH DESCRIPTION
+The mpt-status software is a query tool to access the running
+configuration and status of LSI SCSI HBAs.  mpt-status allows you to
+monitor the health and status of your RAID setup.
+
+.SH OPTIONS
+.TP
+.B \~ \^ \-\-autoload 
+This will try to automatically load the mptctl kernel module.
+.TP
+.B \-u \-\-controller <int>
+Set the IOC unit (controller).
+.TP
+.B \-h \-\-help
+Print some help information.
+.TP
+.B \-n \-\-newstyle
+Use the new style output. This parameter was introduced to retain
+backwards compatibility. If not set, you get the old style output.
+It is very likely that the output of the newstyle format will change 
+heavily in the future, so do not rely on it when writing plugins for
+monitoring software, for example.
+.TP
+.B \-i \-\-set_id <int>
+Set id of primary device (check README).
+.TP
+.B \-p \-\-probe_id
+Use this to probe SCSI id's when not on id 0.
+.TP
+.B \-q \-\-quiet
+Do not display any warnings.
+.TP
+.B \-s \-\-status_only
+Only print the status information. This can
+be used for easy scripting
+.TP
+.B \-v \-\-verbose
+Print verbose information, such as warnings
+.TP
+.B \-V \-\-version
+Print version information
+.TP
+.B \-d \-\-debug [<int>]
+Enable debugging and set level optionally.
+NOTE: This is not fully implemented yet.
+
+.SH DIAGNOSTICS
+The program's exit(2) status is meant to be interpreted as a bit
+mask. If everything went well, zero is returned. If not (i.e. if
+for example an error or unknown condition is detected), the bits
+of the return value shall be interpreted as:
+.TS
+r r l
+___
+r r l.
+Bit	Value	Meaning
+0	1	Abnormal condition / unknown error
+1	2	A logical volume has failed
+2	4	A logical volume is degraded
+3	8	A logical volume is resyncing
+4	16	At least one physical disk failed
+5	32	At least one physical disk is in warning condition
+.TE
+
+.SH REPORTING BUGS
+Report bugs to your linux distribution or software vendor, if mpt-status
+was bundled on your installation. If you have been compiling mpt-status
+from the vanilla sources and experience problems, redirect them to
+preferably <ratz@drugphish.ch> or <rnibali@pyx.ch>.
+
+.SH BUGS
+Besides design bugs, gross software engineering and missing features,
+this software is considered pretty stable and can be used in production
+environments.
+
+.SH FILES
+.I /dev/mptctl
+
+.SH SEE ALSO
+LSI Logic provides CLI tools for megaraid controllers which you can find
+on their webpage, following http://www.lsil.com/cm/DownloadSearch.do
+
+.SH AUTHOR
+mpt-status was written by Roberto Nibali <ratz@drugphish.ch>.
+.PP
+This manual page was written by Steffen Joeris <steffen.joeris@skolelinux.de>,
+for the Debian project (but may be used by others).

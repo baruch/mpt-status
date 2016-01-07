@@ -1,0 +1,67 @@
+mpt-status frequently asked questions (FAQ)
+===========================================
+
+Eventually this should turn into a FAQ document, but right now there are not
+too many questions, so I just put some emails into it.
+
+---------------------------------------------
+> Let's take examples from the README.
+> <!--- Example #1 -->
+> ioc0 vol 0 type IM, 2 phy, 68 GB, flags ENABLED, state OPTIMAL
+> ioc0 phy 0 IBM-ESXS MAS3735NC     FN C901, 68 GB, state ONLINE
+> ioc0 phy 1 IBM-ESXS ST373453LC    FN B85D, 68 GB, state ONLINE
+
+This is the output of the old program, I've removed this output from the README in the upcoming 1.1.5 version.
+
+> <!--- Example #2 -->
+> SR2400:~# ./mpt-status -i 0
+> ioc0 vol_id 0 type IS, 0 phy, 0 GB, state OPTIMAL, flags NONE
+
+This means that you do not have your disks in slot 0 of your SCSI controller.
+
+> <!--- Example #3 -->
+> SR2400:~# ./mpt-status -i 1
+> ioc0 vol_id 1 type IM, 2 phy, 68 GB, state OPTIMAL, flags ENABLED
+> ioc0 phy 0 scsi_id 1 SEAGATE  ST373207LC       0003, 68 GB, state ONLINE, flags NONE
+> ioc0 phy 1 scsi_id 3 SEAGATE  ST373207LC       0003, 68 GB, state ONLINE, flags NONE
+
+Excellent. The next version of mpt-status should guide you and detect the slot id (you have id 1) automatically.
+
+> Here are my questions.
+> 1) Could you tell me from example #1, #2 and #3 where can you see the Raid Level of each hard disk?
+
+The raid level is not visible, would you like to get this information as well? Or do you want to extract the health state of each disk?
+
+> 2) Could you give the meaning of these abbreviations?
+
+Maybe:
+
+> FN=?
+
+This is the vendor's product revision level of the hard disk. Taking your examples #1 and #3, we gather following information:
+
+#1: ioc0 phy 0 IBM-ESXS MAS3735NC     FN C901, 68 GB, state ONLINE
+#3: ioc0 phy 0 scsi_id 1 SEAGATE  ST373207LC       0003, 68 GB, state ONLINE, flags NONE
+
+IBM-ESXS: the vendor id
+SEAGATE: the vendor id
+
+MAS3735NC: the product id
+ST373207LC: the product id
+
+FN C901: the product revision level
+0003: the product revision level
+
+So, as you can see, FN is part of the product revision level of this IBM hard disk.
+
+> IS=?
+
+Integrated Striping (RAID 0)
+
+> IM=?
+
+Integrated Mirroring (RAID 1)
+
+and there is also IME, which means Integrated Mirroring + Enhanced (RAID 1E).
+---------------------------------------------
+

@@ -1,0 +1,35 @@
+This file is to thank all the contributors of this software. There is no
+specific order or preference, it's only a little tool anyway ;).
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Klaus Ade Johnstad: 	- Offered me remote access to hardware to develop and
+			  test mpt-status.
+Jean-Philippe Civade:	- Various little fixes regarding Redhat based distros
+			  and a small document contribution on kernel source
+			  building
+			- Initial RPM spec
+Matti Hiljanen:		- Added Redhat auto-detection
+Stefan Richter:		- Patch to allow setting IOC unit.
+Petter Reinholdtsen:	- Patch to Makefile to allow setting DESTDIR, which
+			  helps distro packagers.
+Jimmy Stewpot:		- Generously offered my access to his hardware so I
+			  could develop and test the auto-probing feature.
+Max Shaposhnikov:	- Has given me 2 months access to his Opteron system
+			  and was very helpful when I rendered his system
+			  unusable. Hopefully I get the 64bit stuff working on
+			  his nodes.
+Steffen Joeris:		- Support for the KFreeBSD project
+Leandro Santi:		- Added support for meaningful exit status
+Rich Edelman:		- Improved KERNEL_PATH to be distro independent &
+			  added generic RPM spec file support
+Jean Delvare:		- Provided cleanup patch to quieten possible problematic
+			  code.
+			- Helpful Suse Contact for mpt-status integration into
+			  SLES and OpenSuse.
+			- Documentation cleanups and valuable man page additions
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+If I have forgotten you or to list any of your contribution, please drop me an
+email and I will add you to this hall of fame list.

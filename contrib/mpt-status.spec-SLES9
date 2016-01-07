@@ -1,0 +1,59 @@
+#
+# spec file for package mpt-status (Version 1.0 )
+#
+# Copyright (c) 2005 SUSE LINUX Products GmbH, Nuernberg, Germany.
+# This file and all modifications and additions to the pristine
+# package are under the same license as the package itself.
+#
+# Please submit bugfixes or comments via http://bugs.opensuse.org
+#
+
+# norootforbuild
+# neededforbuild  
+
+BuildRequires: aaa_base acl attr bash bind-utils bison bzip2 coreutils cpio cpp cracklib cvs cyrus-sasl db devs diffutils e2fsprogs file filesystem fillup findutils flex gawk gdbm-devel glibc glibc-devel glibc-locale gpm grep groff gzip info insserv kbd less libacl libattr libgcc libselinux libstdc++ libxcrypt m4 make man mktemp module-init-tools ncurses ncurses-devel net-tools netcfg openldap2-client openssl pam pam-modules patch permissions popt procinfo procps psmisc pwdutils rcs readline sed strace syslogd sysvinit tar tcpd texinfo timezone unzip util-linux vim zlib zlib-devel autoconf automake binutils gcc gdbm gettext libtool perl rpm
+
+Name:         mpt-status
+License:      GPL
+Group:        Hardware/Other
+Autoreqprov:  on
+Version:      1.0 
+Release:      2.3
+Summary:      program showing status of LSI 1030 RAID controller
+URL:          http://www.red-bean.com/~mab/mpt-status.html
+Source:       %{name}-%{version}.tar.bz2
+Patch:        %{name}-%{version}.diff
+BuildRoot:    %{_tmppath}/%{name}-%{version}-build
+
+%description
+This program shows status of the physical and logical drives attached
+to  LSI 1030 RAID ((mptlinux, fusion, mpt, ioc) controller.
+
+
+
+Authors:
+--------
+    Matt Braithwaite <mab@red-bean.com>
+
+%prep
+%setup
+%patch
+
+%build
+make CFLAGS="$RPM_OPT_FLAGS -o mpt_status"
+
+%install
+mkdir $RPM_BUILD_ROOT/usr
+mkdir $RPM_BUILD_ROOT/usr/bin
+install -m 755 mpt-status $RPM_BUILD_ROOT%{_bindir} 
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%files
+%defattr(-,root,root) 
+%{_bindir}/*
+
+%changelog -n mpt-status
+* Mon Aug 01 2005 - anicka@suse.cz
+- package created (#65766)

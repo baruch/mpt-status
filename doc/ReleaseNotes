@@ -1,0 +1,82 @@
+Release Notes mpt-status 1.2.0 (2006-11-03)
+==============================
+Codename: <Zidane>
+
+[True master of soccer. If you don't know anything about him, read up on him at
+http://en.wikipedia.org/wiki/Zinedine_Zidane. Despite the fact that I'm Italian 
+and I'm proud that we have won the championship, I'd like to dedicate this
+release to my hard-working French contributors. Merci beaucoup et tout est bien 
+qui finit bien.]
+
+
+About
+-----
+The mpt-status software is a query tool to access the running configuration and
+status of LSI SCSI HBAs. This is a completely rewritten version of the original
+mpt-status-1.0 tool written by Matt Braithwaite. mpt-status allows you to
+monitor the health and status of your RAID setup.
+
+Currently supported and tested HBAs are:
+
+LSI 1030 SCSI RAID storage controller
+LSI SAS1064 SCSI RAID storage controller
+LSI SAS1068 SCSI RAID storage controller
+LSI SAS 3442-R SCSI RAID storage controller
+
+Since the tool is using the MPI (message passing interface) changes are high
+that the basic information regarding RAID status will be available for all
+LSI based controllers. Just give it a try and report back.
+
+
+Requirements
+------------
+You should have mptbase and mptctl loaded or compiled into the kernel. If you
+are to compile mpt-status by yourself, make sure you have the kernel source
+installed, or else it will fail. This deficiency will hopefully be addressed
+soon.
+
+
+General Information
+-------------------
+This is the first release with proper 64bit support and mostly clean interface
+querying. On top of that numerous contributions have been merged, please see
+the Changelog for further information. As a last minute addition I've decided
+to bundle the mpt-status.8 man page into the release drop. This was written
+and contributed by Steffen Joeris, the Debian maintainer for mpt-status.
+
+Preliminary work has been done on integrating S.M.A.R.T information in the
+report output. This would allow one to monitor for failing hardware and
+preemptively replace it without business interruption. This information can
+be queried via the --newstyle/-n parameter. The new style parameter also
+provides you with the percentage status of the synchronisation after a
+degradation.
+
+Problems
+--------
+None.
+
+
+Reported working hardware configuration
+---------------------------------------
+Sun Fire X4100
+Sun Fire X4200
+Sun Fire V20z
+Sun Fire V40z
+Dell PE2600
+Intel Server with SE7520BD2S boards
+HP ProLiant DL320 G4
+IBM eServer BladeCenter LS20
+
+
+Upgrade
+-------
+You can upgrade mpt-status without any problems. This has been widely tested
+by a broad user base.
+
+
+Outlook
+-------
+I will take another look at the output format and see if I can improve it.
+The other thing is to take a look at integrating more LSI related products
+or give better indication on how to use the closed-source CLI tools.
+

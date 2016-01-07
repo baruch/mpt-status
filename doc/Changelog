@@ -1,0 +1,290 @@
+2006-11-01, ratz [ratz@drugphish.ch]:
+	o man/mpt-status.8
+		- merged contributions from Jean Delvare
+		- updated with missing sections
+	o doc/*
+		- merged typo/spelling fixes from Jean Delvare
+		- tidy up 64bit information since this problem is solved now
+	o mpt-status.c
+		- removed MPT_STATUS_DEBUG, since this was an unfinished
+		  duplicate version of --debug.
+
+2006-10-26, ratz [ratz@drugphish.ch]:
+	o man/{README,mpt-status.8}
+		- added man page written by Steffen Joeris for the Debian
+		  project.
+	o Makefile
+		- integrated preliminary support for the man page installation
+		  and uninstallation through make install, resp. make uninstall
+		- fixed once again the KERNEL_PATH stuff after Jean Delvare
+		  from Suse mentioned that it broke Suse builds. This time it
+		  should work for both, Suse and Redhat (Fedora).
+	o mpt-status.c
+		- added detection if no RAID is configured on HBA. This only
+		  works with the "--newstyle" or "-n" option for safety reasons
+		  and has not yet been tested.
+
+2006-10-25, ratz [ratz@drugphish.ch]:
+	o Makefile
+		- fixed brokenness due to previously applied patch from Rich :)
+		  The point is that LSI-related headers are in the source and
+		  not the include directory of the build symlink.
+	o mpt-status.c
+		- Suse packages are compiled with additional flags to detect
+		  possibly problematic code. The checker complained about a call
+		  to system() with unchecked return value in mpt-status. Applied
+		  patch from Jean Delvare.
+
+2006-06-29, ratz [ratz@drugphish.ch]:
+	o Makefile
+		- applied patch from Rich Edelman to set KERNEL_PATH more
+		  intelligently 
+	o contrib/contrib/mpt-status.spec
+		- generic spec file from Rich Edelman with patch support
+		- changed quite a lot again actually regarding wording
+		  and also removed the patch section
+	o contrib/*diff
+		- remove obsolete diff from tree regarding sanitation
+
+2006-04-20-
+2006-05-02, ratz [ratz@drugphish.ch]:
+	* Version: 1.2.0-RC7 (not released), after 3 almost complete rewrites
+		   too many changes happened in between the last two weeks to
+		   list them properly. Kernel header sanitizing might not be
+		   possible after all.
+	o mpt-status.c
+		- proper support for 64-bit nodes
+		- added support for spare disk information
+		- added preliminary support for the sync percentage information
+	o doc/TODO
+		- updated
+
+2006-04-20, ratz [ratz@drugphish.ch]:
+	o mpt-status.c
+		- reworked physical disk section
+		- integrated the exit status patch submitted by Leandro Santi
+
+2006-04-16, ratz [ratz@drugphish.ch]:
+	o mpt-status.c
+		- merged Steffen Joeris patch to support integrating mpt-status
+		  into the KFreeBSD project.
+
+2006-03-09, ratz [ratz@drugphish.ch]:
+	o mpt-status.c
+		- Martin Hamant reported an issue regarding the IOC unit, which
+		  did not work for more than 1 controller. Fix it, by setting
+		  ioc_unit as part of the address unit passed over to readpage.
+
+2006-03-06, ratz [ratz@drugphish.ch]:
+	o mpt-status.c
+		- removed SGE debugging lines
+		- added checkForLibraryMode() which reads the __MPT_STATUS_LIB
+		  environment variable and if set will initialize the library
+		  functionality of mpt-status.
+		- changed the output to please Martin Hamant and to also ease
+		  up the scriptability.
+
+2006-03-05, ratz [ratz@drugphish.ch]:
+	o doc/Changelog
+		- fixed overly long line
+	o mpt-status.c
+		- added human readable output for IM, IME, IS, which is nothing
+		  else than RAID0, RAID1E and RAID1.
+
+2006-03-04, ratz [ratz@drugphish.ch]:
+	* Version: 1.1.5 [released] (Codename: Sebnem)
+	o doc/README
+		- major overhaul regarding distribution availability and
+		  installation process
+	o doc/FAQ
+		- added a possible FAQ document containing parts of an email
+		  I wrote to explain the output of mpt-status
+	o doc/ReleaseNotes
+		- wrote Problems, Upgrade, Outlook sections
+	o incl/sles.h
+		- added preliminary work to kernel header sanitation done by
+		  SuSE
+	o mpt-status.c
+		- made the struct divisior 32/64 bit safe
+		- removed irritating compile warning for type signedness since
+		  too many people complained about it and before the kernel
+		  headers are not sanitized, there is no point in trying to
+		  address this deficiency
+		- preliminary work done for IOCpage5_t support (hotspare)
+		- fixed missing signedness casts
+	o contrib/sizes.c
+		- added a little tool to check the machine's type sizes
+	o contrib/*.spec*
+		- added various untested spec files
+
+2006-02-11, ratz [ratz@drugphish.ch]:
+	o Makefile
+		- Added support for DESTDIR, patch kindly submitted by Petter
+		  Reinholdtsen
+
+2006-01-22, ratz [ratz@drugphish.ch]:
+	o mpt-status.{ch}
+		- s/log_id/vol_id/ in the first line if -s is submitted
+		- added --probe_id which will probe for the first scsi id
+		- fixed a long standing bug resulting in a coredump when using
+		  the -d parameter
+		- moved print_status_only, id_of_primary_device, ioc_unit into
+		  global context, so there is no need to pass those variables
+		  through the stack all the time
+		- reorganized long_options and usage to be in alphabetical
+		  order
+		- fixed read_page to actually work on LSI-SAS1064 controllers
+	o doc/*
+		- major cleanup and improved documentation
+
+2005-11-14, ratz [ratz@drugphish.ch]:
+	o mpt-status.c
+		- removed Nietsche, added "--autoload" which will try to exec
+		  /sbin/modprobe mptctl.
+
+2005-11-12, ratz [ratz@drugphish.ch]:
+	* Version: 1.1.4 [released]
+
+2005-11-11, ratz [ratz@drugphish.ch]:
+	o doc/DeveloperNotes
+		- Added information from the mpt(4) man page of OpenBSD
+	o mpt-status.h
+		- Fixed VERSION string
+	o mpt-status.c
+		- Merged patch by Thomas Richer to allow setting the ioc unit
+		- Added Copyright note
+		- Removed the modprobe call since this is braindead. Not all
+		  people have mpt loaded as module. Making it easy to use does
+		  not mean making it dumb.
+		- Rewrote the primitive parameter passing on command line to
+		  more sophisticated GNU style option parsing.
+		- Added some more switches, check them out with --help
+		  The --nietzsche_kills switch is only so I won't forget how
+		  to use long options without short options.
+		- Reorganized include headers to have a legitimate C code ;).
+		  --> Check news://comp.std.c for some crazy stuff on C
+		- Style cleanup
+		- Function prototypes are static now, since we're using it only
+		  in one context.
+		- Added the '-v' parameter which can be used after a Houston
+		  problem to get some more output on the warnings.
+		- Added the '-q' flag to really quiet down things.
+
+2005-07-16, ratz [ratz@drugphish.ch]:
+	o Makefile
+		- Incorporated patch to auto-detect redhat, done by Matti
+		  Hiljanen
+	o doc/INSTALL
+		- Removed RH specific entry, since RH is now auto-detected
+	o doc/THANKS
+		- Matti earned his stars ;)
+	o contrib/mpt-status.spec
+		- Added preliminary support for RPM building, work done by
+		  Jean-Philippe Civade.
+
+2005-07-15, ratz [ratz@drugphish.ch]:
+	* Version: 1.1.3 [released]
+	o mpt-status.h
+		- incorporated compile fixes for redhat based distros from
+		  Jean-Philippe Civade. Added the REDHAT define because only
+		  redhat distros seem to expose the undefined __user and
+		  __kernel problem. The impact on the correct ioctl passing
+		  is unknown. I should sanitize the LSI related headers and
+		  create user space headers. It's not like they change their
+		  API like their underwear.
+	o Makefile
+		- added DFLAGS for redhat parameter passing
+		- fixed install target, bug found by Jean-Philippe Civade
+		- fixed uninstall target
+		- added preliminary support for compiling on 64bit platforms.
+		  Tested only on sparc64.
+	o doc/README
+		- proper split between README and INSTALL
+	o doc/INSTALL
+		- added redhat related compilation instructions
+		- added "howto install redhat kernel sources rpm" document
+		  written by Jean-Philippe Civade.
+		- explained the install and uninstall process
+	o doc/THANKS
+		- initial import: this is to thank all the people contributing
+		  to this software.
+	o doc/ReleaseNotes
+		- initial import: I consider them important, even though it's
+		  just a very simple tool ... so far ;)
+
+2005-06-16, ratz [ratz@drugphish.ch]:
+	* Version: 1.1.3
+	o doc/Changelog
+		- corrected date format
+	o mpt-status.h
+		- added <linux/compiler.h> for better 2.6.x compilation
+		  support
+		- Lindent'ed
+	o mpt-status.c
+		- Lindent'ed
+		- added comment regarding compilation warning
+
+2005-06-09, ratz [ratz@drugphish.ch]:
+	* Version: 1.1.2
+	o mpt-status.c
+		- removed some local headers and put into mpt-status.h
+	o mpt-status.h
+		- added local headers
+	o Makefile
+		- introduced KERNEL_PATH which can be submitted to the make
+		  command, so no more editing is needed. Use as follows:
+
+			make KERNEL_PATH=/path/to/kernel/source
+
+		- introduced PREFIX which is a pseudo prefix semantics as seen
+		  with autoconf tools for install and uninstall targets
+		- added install and uninstall targets.
+
+	o README -> doc/README
+		- moved to doc folder where all documentation should reside
+	o doc/INSTALL
+		- added to shortly document the installation procedure
+
+2005-05-19, ratz [ratz@tac.ch]:
+	* Version: 1.1.1
+	o incl
+		- created directory and moved pci-utils related header files
+	o Makefile
+		- adapted to new header location
+		- added distclean target which equals to the clean target
+	o README
+		- tidy up to be presentable
+	o Changelog
+		- started primitive changelog
+	o TODO
+		- added some todos I've also sent Matt
+	o AUTHORS
+		- created and added my name ;).
+
+2005-05-18, ratz [ratz@tac.ch]:
+	* Version: 1.1.0
+	o mpt-status.c
+		- improved output handling
+		- documented scsi id issue for address parameter in read_page()
+		- made main() ISO C91 standard compliant
+		- switched position of state versus flags for easy shell parsing
+		- added -i option to specify scsi id of primary disk of array
+		- added -h option for little help
+		- added UID=0 check
+		- added VERSION (1.1.0) info
+		- added print_usage(), print_version()
+		- added scsi_id output for physical disk status output, so you
+		  at least know which disk to rip out of the chassis once it
+		  failed.
+		- s/exit(1)/exit(EXIT_FAILURE)/g
+		- s/bzero/memset/g and of course the 3rd argument
+		- s/return 0/exit(EXIT_SUCCESS)/
+		- s/vol/vol_id/g
+	o pci.h, config.h, header.h
+		- added from pci-utils package
+	o README
+		- started README with some unimportant information
+	o Makefile
+		- added LDFLAGS for static linking
+		- added CC = gcc to be able to compile it under uclibc
+		- added -W -O for more warnings

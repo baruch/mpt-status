@@ -1,0 +1,17 @@
+This file is a wishlist compiled out of various people's ideas. It should
+eventually be prioritized into "important, normal, nice to have".
+
+o find out the remaining pieces of magic around the kernel structs
+  and document them accordingly
+o get in contact with LSI for feedback and support
+o check if there is really the need for other RAID types and add support for
+  them. A diff from the 2.4.x to the 2.6.x kernel in this header:
+
+ #define MPI_RAID_VOL_TYPE_IS                        (0x00)
+ #define MPI_RAID_VOL_TYPE_IME                       (0x01)
+ #define MPI_RAID_VOL_TYPE_IM                        (0x02)
++#define MPI_RAID_VOL_TYPE_RAID_5                    (0x03)
++#define MPI_RAID_VOL_TYPE_RAID_6                    (0x04)
++#define MPI_RAID_VOL_TYPE_RAID_10                   (0x05)
++#define MPI_RAID_VOL_TYPE_RAID_50                   (0x06)
++#define MPI_RAID_VOL_TYPE_UNKNOWN                   (0xFF)
